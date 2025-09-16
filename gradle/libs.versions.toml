@@ -1,0 +1,37 @@
+[versions]
+detekt = "1.23.8"
+kotlin = "2.2.0"
+kotlinter = "5.2.0"
+kotlinx-coroutines = "1.10.2"
+mockk = "1.14.5"
+mockwebserver = "5.1.0"
+spring-boot = "3.5.4"
+
+[libraries]
+assertj = { module = "org.assertj:assertj-core" }
+detekt-plugin = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+jackson-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin" }
+junit = { module = "org.junit.jupiter:junit-jupiter" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher" }
+kotlin-bom = { module = "org.jetbrains.kotlin:kotlin-bom", version.ref = "kotlin" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect" }
+kotlin-stdlib = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8"}
+kotlinx-coroutines-bom = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-bom", version.ref = "kotlinx-coroutines" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test" }
+kotlin-jvm-plugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinter-plugin = { module = "org.jmailen.kotlinter:org.jmailen.kotlinter.gradle.plugin", version.ref = "kotlinter" }
+logback = { module = "ch.qos.logback:logback-classic" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockwebserver = { module = "com.squareup.okhttp3:mockwebserver3", version.ref = "mockwebserver" }
+slf4j-api = { module = "org.slf4j:slf4j-api" }
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter = { module = "org.springframework.boot:spring-boot-starter" }
+spring-webflux = { module = "org.springframework:spring-webflux" }
+
+[plugins]
+detekt = { id = "io.gitlab.arturbosch.detekt" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlinter = { id = "org.jmailen.kotlinter" }
+spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
