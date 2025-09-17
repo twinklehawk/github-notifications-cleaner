@@ -8,5 +8,5 @@ interface NotificationsClient {
     fun getNotifications(): Flow<Notification>
 
     /** Marks a thread as done. */
-    suspend fun markThreadDone(threadId: Int)
+    suspend fun markThreadDone(threadId: Long)
 }
