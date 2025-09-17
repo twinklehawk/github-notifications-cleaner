@@ -43,7 +43,7 @@ jobs:
           # strip "v" prefix from tag name
           TAG_NAME=$(echo $TAG_NAME | sed -e 's/^v//')
           echo "Publishing image to ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME"
-          docker tag ddns-updater ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME
-          docker tag ddns-updater ghcr.io/twinklehawk/github-notifications-cleaner:latest
+          docker tag github-notifications-cleaner ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME
+          docker tag github-notifications-cleaner ghcr.io/twinklehawk/github-notifications-cleaner:latest
           docker push ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME
           docker push ghcr.io/twinklehawk/github-notifications-cleaner:latest
