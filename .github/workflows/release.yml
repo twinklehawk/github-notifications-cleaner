@@ -1,0 +1,49 @@
+name: Deploy release
+on:
+  release:
+    types: [ published ]
+jobs:
+  docker-image:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/cache@5a3ec84eff668545956fd18022155c47e93e2684 # v4.2.3
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+            .gradle/configuration-cache
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Set up JDK
+        uses: actions/setup-java@c5195efecf7bdfc987ee8bae7a71cb8b11521c00 # v4.7.1
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Build jar
+        run: ./gradlew assemble --no-daemon
+      - name: Build docker image
+        run: |
+          cd app
+          TAG_NAME=${GITHUB_REF#"refs/tags/"}
+          docker build -t github-notifications-cleaner \
+            --label="org.opencontainers.image.version=$TAG_NAME" \
+            --label="org.opencontainers.image.revision=$GITHUB_SHA" \
+            --label="org.opencontainers.image.created=$(date +'%Y-%m-%dT%H:%M:%S')" \
+            .
+      - name: Log in to registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u $ --password-stdin
+      - name: Publish docker images
+        run: |
+          TAG_NAME=${GITHUB_REF#"refs/tags/"}
+          # strip "v" prefix from tag name
+          TAG_NAME=$(echo $TAG_NAME | sed -e 's/^v//')
+          echo "Publishing image to ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME"
+          docker tag ddns-updater ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME
+          docker tag ddns-updater ghcr.io/twinklehawk/github-notifications-cleaner:latest
+          docker push ghcr.io/twinklehawk/github-notifications-cleaner:$TAG_NAME
+          docker push ghcr.io/twinklehawk/github-notifications-cleaner:latest
