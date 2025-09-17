@@ -47,7 +47,7 @@ class NotificationsClientImpl(
                 throw GithubClientException(it.statusCode.value(), it.responseBodyAsString, it)
             }
 
-    override suspend fun markThreadDone(threadId: Int) {
+    override suspend fun markThreadDone(threadId: Long) {
         try {
             webClient
                 .delete()

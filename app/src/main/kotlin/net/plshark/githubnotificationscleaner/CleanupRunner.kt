@@ -30,7 +30,7 @@ class CleanupRunner(
                 .filter { it.subject.type == Subject.TYPE_PULL_REQUEST }
                 .filter { pullRequestsClient.getPullRequest(it.subject.url).state == PullRequest.STATE_CLOSED }
                 .onEach { log.info("Marking notification [{}] as done", it.subject.title) }
-                .collect { notificationsClient.markThreadDone(it.id.toInt()) }
+                .collect { notificationsClient.markThreadDone(it.id.toLong()) }
         }
         log.info("Done cleaning GitHub notifications")
     }
