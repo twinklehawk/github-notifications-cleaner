@@ -17,7 +17,12 @@ import org.junit.jupiter.api.Test
 class CleanupRunnerTest {
     private val notificationsClient: NotificationsClient = mockk()
     private val pullRequestsClient: PullRequestsClient = mockk()
-    private val runner = CleanupRunner(notificationsClient, pullRequestsClient)
+    private val properties =
+        ApplicationProperties(
+            includeReadNotifications = true,
+            github = GitHubClientProperties(apiToken = "test"),
+        )
+    private val runner = CleanupRunner(notificationsClient, pullRequestsClient, properties)
 
     @Test
     fun `run marks closed pull request notifications as done`() {
@@ -77,5 +82,30 @@ class CleanupRunnerTest {
         runner.run()
 
         coVerify(exactly = 0) { notificationsClient.markThreadDone(any()) }
+    }
+
+    @Test
+    fun `run fetches only read notifications when configured`() {
+        val properties =
+            ApplicationProperties(
+                includeReadNotifications = false,
+                github = GitHubClientProperties(apiToken = "test"),
+            )
+        val readOnlyRunner = CleanupRunner(notificationsClient, pullRequestsClient, properties)
+        every { notificationsClient.getUnreadNotifications() } returns
+            flowOf(
+                Notification(
+                    id = "1",
+                    unread = true,
+                    subject = Subject(title = "title-1", url = "url-1", type = Subject.TYPE_PULL_REQUEST),
+                ),
+            )
+        coEvery { pullRequestsClient.getPullRequest("url-1") } returns
+            PullRequest(id = 1, state = PullRequest.STATE_CLOSED)
+        coEvery { notificationsClient.markThreadDone(any()) } just runs
+
+        readOnlyRunner.run()
+
+        coVerify { notificationsClient.markThreadDone(1) }
     }
 }

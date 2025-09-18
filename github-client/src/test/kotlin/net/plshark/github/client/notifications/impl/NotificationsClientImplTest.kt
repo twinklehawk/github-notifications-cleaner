@@ -135,6 +135,28 @@ class NotificationsClientImplTest {
         }
 
     @Test
+    fun `getUnreadNotifications sends the correct request`() =
+        doBlocking {
+            server.enqueue(
+                MockResponse(
+                    headers = headersOf("Content-Type", "application/json"),
+                    body = "[]",
+                ),
+            )
+
+            val result = client.getUnreadNotifications().toList()
+
+            assertThat(result).isEmpty()
+            assertThat(server.requestCount).isEqualTo(1)
+            val request = server.takeRequest()
+            assertThat(request.url.encodedPath).isEqualTo("/notifications")
+            assertThat(request.url.query).isEqualTo("all=false&page=1")
+            assertThat(request.headers["Authorization"]).isEqualTo("Bearer test-token")
+            assertThat(request.headers["Accept"]).isEqualTo("application/vnd.github+json")
+            assertThat(request.headers["X-GitHub-Api-Version"]).isEqualTo("2022-11-28")
+        }
+
+    @Test
     fun `markThreadDone sends the correct request`() =
         doBlocking {
             server.enqueue(MockResponse())

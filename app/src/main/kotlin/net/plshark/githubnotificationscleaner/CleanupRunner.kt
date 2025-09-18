@@ -19,14 +19,14 @@ import org.springframework.stereotype.Component
 class CleanupRunner(
     private val notificationsClient: NotificationsClient,
     private val pullRequestsClient: PullRequestsClient,
+    private val applicationProperties: ApplicationProperties,
 ) : CommandLineRunner {
     private val log = LoggerFactory.getLogger(Application::class.java)
 
     override fun run(vararg args: String?) {
         log.info("Cleaning GitHub notifications")
         runBlocking {
-            notificationsClient
-                .getNotifications()
+            getNotifications()
                 .filter { it.subject.type == Subject.TYPE_PULL_REQUEST }
                 .filter { pullRequestsClient.getPullRequest(it.subject.url).state == PullRequest.STATE_CLOSED }
                 .onEach { log.info("Marking notification [{}] as done", it.subject.title) }
@@ -34,4 +34,11 @@ class CleanupRunner(
         }
         log.info("Done cleaning GitHub notifications")
     }
+
+    private fun getNotifications() =
+        if (applicationProperties.includeReadNotifications) {
+            notificationsClient.getNotifications()
+        } else {
+            notificationsClient.getUnreadNotifications()
+        }
 }
