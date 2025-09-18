@@ -20,32 +20,40 @@ class NotificationsClientImpl(
     private val baseUrl: String = "https://api.github.com",
     private val apiToken: String,
 ) : NotificationsClient {
-    override fun getNotifications(): Flow<Notification> =
+    override fun getNotifications(): Flow<Notification> = getNotifications(includeRead = true)
+
+    override fun getUnreadNotifications(): Flow<Notification> = getNotifications(includeRead = false)
+
+    private fun getNotifications(includeRead: Boolean = true) =
         flow {
             var page = 1
             val done = AtomicBoolean()
             while (!done.get()) {
-                val result = getNotificationsPage(page).onEmpty { done.set(true) }
+                val result =
+                    getNotificationsPage(includeRead = includeRead, page = page)
+                        .onEmpty { done.set(true) }
                 emitAll(result)
                 ++page
             }
         }
 
-    private fun getNotificationsPage(page: Int = 1) =
-        webClient
-            .get()
-            .uri("$baseUrl/notifications?all=true&page=$page")
-            .header("Authorization", "Bearer $apiToken")
-            .header("Accept", "application/vnd.github+json")
-            .header("X-GitHub-Api-Version", "2022-11-28")
-            .retrieve()
-            .bodyToFlow<Notification>()
-            .catch {
-                if (it !is WebClientResponseException) {
-                    throw it
-                }
-                throw GithubClientException(it.statusCode.value(), it.responseBodyAsString, it)
+    private fun getNotificationsPage(
+        includeRead: Boolean = true,
+        page: Int = 1,
+    ) = webClient
+        .get()
+        .uri("$baseUrl/notifications?all=$includeRead&page=$page")
+        .header("Authorization", "Bearer $apiToken")
+        .header("Accept", "application/vnd.github+json")
+        .header("X-GitHub-Api-Version", "2022-11-28")
+        .retrieve()
+        .bodyToFlow<Notification>()
+        .catch {
+            if (it !is WebClientResponseException) {
+                throw it
             }
+            throw GithubClientException(it.statusCode.value(), it.responseBodyAsString, it)
+        }
 
     override suspend fun markThreadDone(threadId: Int) {
         try {
