@@ -17,10 +17,6 @@
     {
       "matchUpdateTypes": ["patch", "digest"],
       "automerge": true
-    },
-    {
-      "matchPackageNames": ["gcr.io/distroless/java21-debian12"],
-      "pinDigests": false
     }
   ]
 }
