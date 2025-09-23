@@ -8,6 +8,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.web.reactive.function.client.WebClient
+import java.time.InstantSource
 
 /** Main Spring configuration for the application. */
 @Configuration
@@ -36,4 +37,8 @@ class AppConfig {
             baseUrl = properties.github.baseUrl,
             apiToken = properties.github.apiToken,
         )
+
+    /** Creates an [InstantSource]. */
+    @Bean
+    fun instantSource(): InstantSource = InstantSource.system()
 }

@@ -1,8 +1,11 @@
 package net.plshark.githubnotificationscleaner
 
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.runBlocking
+import net.plshark.github.client.notifications.GetNotificationsRequest
+import net.plshark.github.client.notifications.Notification
 import net.plshark.github.client.notifications.NotificationsClient
 import net.plshark.github.client.notifications.Subject
 import net.plshark.github.client.pullrequests.PullRequest
@@ -10,6 +13,9 @@ import net.plshark.github.client.pullrequests.PullRequestsClient
 import org.slf4j.LoggerFactory
 import org.springframework.boot.CommandLineRunner
 import org.springframework.stereotype.Component
+import java.time.InstantSource
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 /**
  * A [CommandLineRunner] that iterates over incomplete notifications and marks
@@ -19,6 +25,7 @@ import org.springframework.stereotype.Component
 class CleanupRunner(
     private val notificationsClient: NotificationsClient,
     private val pullRequestsClient: PullRequestsClient,
+    private val instantSource: InstantSource,
     private val applicationProperties: ApplicationProperties,
 ) : CommandLineRunner {
     private val log = LoggerFactory.getLogger(Application::class.java)
@@ -35,10 +42,15 @@ class CleanupRunner(
         log.info("Done cleaning GitHub notifications")
     }
 
-    private fun getNotifications() =
-        if (applicationProperties.includeReadNotifications) {
-            notificationsClient.getNotifications()
-        } else {
-            notificationsClient.getUnreadNotifications()
-        }
+    private fun getNotifications(): Flow<Notification> {
+        val request =
+            GetNotificationsRequest(
+                all = applicationProperties.notifications.read,
+                since =
+                    applicationProperties.notifications.sinceOffset?.let {
+                        OffsetDateTime.ofInstant(instantSource.instant().minus(it), ZoneId.of("Z"))
+                    },
+            )
+        return notificationsClient.getNotifications(request)
+    }
 }
