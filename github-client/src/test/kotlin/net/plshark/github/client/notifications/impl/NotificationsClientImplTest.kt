@@ -3,6 +3,7 @@ package net.plshark.github.client.notifications.impl
 import kotlinx.coroutines.flow.toList
 import mockwebserver3.MockResponse
 import mockwebserver3.MockWebServer
+import net.plshark.github.client.notifications.GetNotificationsRequest
 import net.plshark.github.client.notifications.Notification
 import net.plshark.github.client.notifications.Subject
 import net.plshark.test.TestUtils.doBlocking
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.web.reactive.function.client.WebClient
+import java.time.OffsetDateTime
+import java.time.ZoneOffset
 
 class NotificationsClientImplTest {
     private val server = MockWebServer()
@@ -42,17 +45,54 @@ class NotificationsClientImplTest {
                     body = "[]",
                 ),
             )
+            val request =
+                GetNotificationsRequest(
+                    all = true,
+                    participating = true,
+                    since = OffsetDateTime.of(2025, 9, 4, 11, 57, 30, 0, ZoneOffset.of("Z")),
+                    before = OffsetDateTime.of(2024, 9, 4, 11, 57, 30, 0, ZoneOffset.of("Z")),
+                    perPage = 20,
+                )
 
-            val result = client.getNotifications().toList()
+            val result = client.getNotifications(request).toList()
 
             assertThat(result).isEmpty()
             assertThat(server.requestCount).isEqualTo(1)
-            val request = server.takeRequest()
-            assertThat(request.url.encodedPath).isEqualTo("/notifications")
-            assertThat(request.url.query).isEqualTo("all=true&page=1")
-            assertThat(request.headers["Authorization"]).isEqualTo("Bearer test-token")
-            assertThat(request.headers["Accept"]).isEqualTo("application/vnd.github+json")
-            assertThat(request.headers["X-GitHub-Api-Version"]).isEqualTo("2022-11-28")
+            val actualRequest = server.takeRequest()
+            assertThat(actualRequest.url.encodedPath).isEqualTo("/notifications")
+            assertThat(actualRequest.url.queryParameter("all")).isEqualTo("true")
+            assertThat(actualRequest.url.queryParameter("participating")).isEqualTo("true")
+            assertThat(actualRequest.url.queryParameter("since")).isEqualTo("2025-09-04T11:57:30Z")
+            assertThat(actualRequest.url.queryParameter("before")).isEqualTo("2024-09-04T11:57:30Z")
+            assertThat(actualRequest.url.queryParameter("page")).isEqualTo("1")
+            assertThat(actualRequest.url.queryParameter("per_page")).isEqualTo("20")
+            assertThat(actualRequest.headers["Authorization"]).isEqualTo("Bearer test-token")
+            assertThat(actualRequest.headers["Accept"]).isEqualTo("application/vnd.github+json")
+            assertThat(actualRequest.headers["X-GitHub-Api-Version"]).isEqualTo("2022-11-28")
+        }
+
+    @Test
+    fun `getNotifications leaves off unset request values`() =
+        doBlocking {
+            server.enqueue(
+                MockResponse(
+                    headers = headersOf("Content-Type", "application/json"),
+                    body = "[]",
+                ),
+            )
+            val request = GetNotificationsRequest()
+
+            val result = client.getNotifications(request).toList()
+
+            assertThat(result).isEmpty()
+            assertThat(server.requestCount).isEqualTo(1)
+            val actualRequest = server.takeRequest()
+            assertThat(actualRequest.url.queryParameter("all")).isNull()
+            assertThat(actualRequest.url.queryParameter("participating")).isNull()
+            assertThat(actualRequest.url.queryParameter("since")).isNull()
+            assertThat(actualRequest.url.queryParameter("before")).isNull()
+            assertThat(actualRequest.url.queryParameter("page")).isEqualTo("1")
+            assertThat(actualRequest.url.queryParameter("per_page")).isNull()
         }
 
     @Test
@@ -73,7 +113,7 @@ class NotificationsClientImplTest {
                 MockResponse(headers = headersOf("Content-Type", "application/json"), body = "[]"),
             )
 
-            val result = client.getNotifications().toList()
+            val result = client.getNotifications(GetNotificationsRequest()).toList()
 
             assertThat(result).containsExactly(
                 Notification(
@@ -122,7 +162,7 @@ class NotificationsClientImplTest {
                 ),
             )
 
-            val result = client.getNotifications().toList()
+            val result = client.getNotifications(GetNotificationsRequest()).toList()
 
             assertThat(result).hasSize(3)
             assertThat(result[0].id).isEqualTo("1")
@@ -132,28 +172,6 @@ class NotificationsClientImplTest {
             assertThat(server.takeRequest().url.queryParameter("page")).isEqualTo("1")
             assertThat(server.takeRequest().url.queryParameter("page")).isEqualTo("2")
             assertThat(server.takeRequest().url.queryParameter("page")).isEqualTo("3")
-        }
-
-    @Test
-    fun `getUnreadNotifications sends the correct request`() =
-        doBlocking {
-            server.enqueue(
-                MockResponse(
-                    headers = headersOf("Content-Type", "application/json"),
-                    body = "[]",
-                ),
-            )
-
-            val result = client.getUnreadNotifications().toList()
-
-            assertThat(result).isEmpty()
-            assertThat(server.requestCount).isEqualTo(1)
-            val request = server.takeRequest()
-            assertThat(request.url.encodedPath).isEqualTo("/notifications")
-            assertThat(request.url.query).isEqualTo("all=false&page=1")
-            assertThat(request.headers["Authorization"]).isEqualTo("Bearer test-token")
-            assertThat(request.headers["Accept"]).isEqualTo("application/vnd.github+json")
-            assertThat(request.headers["X-GitHub-Api-Version"]).isEqualTo("2022-11-28")
         }
 
     @Test
