@@ -1,4 +1,4 @@
-FROM gcr.io/distroless/java21-debian12:nonroot@sha256:5d281651dbf431f0fa9bc28bce5514a5594d66ccd2f9bf8602adccfc2518d4f9
+FROM gcr.io/distroless/java21-debian12:nonroot@sha256:c2353aa67320df40e4975277210286c20edee9d5dbd92d8158f491a2fbc6a261
 
 LABEL org.opencontainers.image.title=github-notifications-cleaner
 LABEL org.opencontainers.image.url=https://github.com/twinklehawk/github-notifications-cleaner
