@@ -11,6 +11,6 @@ class Application
 /** The application entry point. */
 fun main(args: Array<String>) {
     runApplication<Application>(args = args) {
-        webApplicationType = WebApplicationType.NONE
+        setWebApplicationType(WebApplicationType.NONE)
     }
 }

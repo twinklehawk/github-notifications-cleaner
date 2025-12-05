@@ -30,7 +30,7 @@ class CleanupRunner(
 ) : CommandLineRunner {
     private val log = LoggerFactory.getLogger(Application::class.java)
 
-    override fun run(vararg args: String?) {
+    override fun run(vararg args: String) {
         log.info("Cleaning GitHub notifications")
         runBlocking {
             getNotifications()
