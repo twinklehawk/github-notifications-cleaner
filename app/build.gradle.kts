@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     implementation(project(":github-client"))
-    implementation(libs.spring.boot.starter)
+    implementation(libs.spring.boot.starter.webclient)
     implementation(libs.jackson.kotlin)
     implementation(libs.kotlin.reflect)
     implementation(libs.kotlin.stdlib)
