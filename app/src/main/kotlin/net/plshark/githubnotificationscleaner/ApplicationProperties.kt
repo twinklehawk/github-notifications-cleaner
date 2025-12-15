@@ -10,13 +10,21 @@ data class ApplicationProperties(
     val notifications: NotificationProperties = NotificationProperties(),
 )
 
-/** Configuration properties for the GitHub client. */
+/**
+ * Configuration properties for the GitHub client.
+ * @param baseUrl the base GitHub API URL
+ * @param apiToken the API token necessary to authenticate to the GitHub API
+ */
 data class GitHubClientProperties(
     val baseUrl: String = "https://api.github.com",
     val apiToken: String,
 )
 
-/** Configuration properties for notifications to process. */
+/**
+ * Configuration properties for notifications to process.
+ * @param read if true, also process notifications that have been marked as read
+ * @param sinceOffset if not null, only process notifications modified since this offset
+ */
 data class NotificationProperties(
     val read: Boolean = true,
     val sinceOffset: Duration? = null,
