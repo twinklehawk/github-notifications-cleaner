@@ -2,6 +2,7 @@ plugins {
     id("kotlin-conventions")
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.spring.boot)
+    id("org.graalvm.buildtools.native") version "0.11.3"
 }
 
 dependencies {
@@ -20,4 +21,13 @@ dependencies {
     testImplementation(libs.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
     testRuntimeOnly(libs.junit.launcher)
+}
+
+graalvmNative {
+    binaries {
+        named("main") {
+            // TODO static only works when building on linux
+            buildArgs.add("--static")
+        }
+    }
 }
