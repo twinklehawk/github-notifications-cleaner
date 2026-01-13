@@ -2,6 +2,7 @@ plugins {
     id("kotlin-conventions")
     alias(libs.plugins.kotlin.spring)
     alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.boot.aot)
 }
 
 dependencies {
@@ -19,5 +20,6 @@ dependencies {
     testImplementation(libs.assertj)
     testImplementation(libs.mockwebserver)
     testImplementation(libs.kotlinx.coroutines.test)
+    testImplementation(libs.spring.boot.starter.test)
     testRuntimeOnly(libs.junit.launcher)
 }

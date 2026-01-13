@@ -28,6 +28,7 @@ mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
 mockwebserver = { module = "com.squareup.okhttp3:mockwebserver3", version.ref = "mockwebserver" }
 slf4j-api = { module = "org.slf4j:slf4j-api" }
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "spring-boot" }
+spring-boot-starter-test = { module = "org.springframework.boot:spring-boot-starter-test" }
 spring-boot-starter-webclient = { module = "org.springframework.boot:spring-boot-starter-webclient" }
 spring-webflux = { module = "org.springframework:spring-webflux" }
 
@@ -37,3 +38,4 @@ kotlin-jvm = { id = "org.jetbrains.kotlin.jvm" }
 kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
 kotlinter = { id = "org.jmailen.kotlinter" }
 spring-boot = { id = "org.springframework.boot", version.ref = "spring-boot" }
+spring-boot-aot = { id = "org.springframework.boot.aot", version.ref = "spring-boot" }
