@@ -9,5 +9,5 @@ LABEL org.opencontainers.image.licenses=Apache-2.0
 WORKDIR /app
 COPY build/libs/app.jar app.jar
 
-ENTRYPOINT ["java", "-Dspring.aot.enabled=true", "-jar"]
+ENTRYPOINT ["/usr/bin/java", "-Dspring.aot.enabled=true", "-jar"]
 CMD ["app.jar"]
