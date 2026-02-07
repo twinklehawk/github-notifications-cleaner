@@ -1,6 +1,6 @@
 [versions]
 detekt = "1.23.8"
-kotlin = "2.3.0"
+kotlin = "2.3.10"
 kotlinter = "5.4.0"
 kotlinx-coroutines = "1.10.2"
 mockk = "1.14.9"
