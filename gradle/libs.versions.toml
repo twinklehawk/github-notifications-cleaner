@@ -5,7 +5,7 @@ kotlinter = "5.4.2"
 kotlinx-coroutines = "1.10.2"
 mockk = "1.14.9"
 mockwebserver = "5.3.2"
-spring-boot = "4.0.2"
+spring-boot = "4.0.3"
 
 [libraries]
 assertj = { module = "org.assertj:assertj-core" }
