@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonInclude
 @JsonInclude(JsonInclude.Include.NON_NULL)
 data class Subject(
     val title: String,
-    val url: String,
+    val url: String?,
     val type: String,
 ) {
     companion object {
