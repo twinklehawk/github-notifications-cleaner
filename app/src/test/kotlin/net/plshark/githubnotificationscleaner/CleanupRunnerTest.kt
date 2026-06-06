@@ -73,6 +73,22 @@ class CleanupRunnerTest {
     }
 
     @Test
+    fun `run ignores notifications without URLs`() {
+        every { notificationsClient.getNotifications(any()) } returns
+            flowOf(
+                Notification(
+                    id = "1",
+                    unread = true,
+                    subject = Subject(title = "title-1", url = null, type = Subject.TYPE_PULL_REQUEST),
+                ),
+            )
+
+        runner.run()
+
+        coVerify(exactly = 0) { notificationsClient.markThreadDone(any()) }
+    }
+
+    @Test
     fun `run ignores notifications for non-closed pull requests`() {
         every { notificationsClient.getNotifications(any()) } returns
             flowOf(
