@@ -4,7 +4,7 @@ kotlin = "2.4.21"
 kotlinter = "5.7.0"
 kotlinx-coroutines = "1.11.0"
 mockk = "1.14.11"
-mockwebserver = "5.5.0"
+mockwebserver = "5.5.1"
 spring-boot = "4.1.2"
 
 [libraries]
